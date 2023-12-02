@@ -9,6 +9,14 @@ headers = setting.headers.copy()
 headers.pop("DS")
 headers.pop("Origin")
 headers.pop("Referer")
+headers.pop("User-Agent")
+headers.update({
+    "x-rpc-sys_version": "6.0.1",
+    "x-rpc-device_name": "Netease MuMu",
+    "x-rpc-device_model": "MuMu",
+    "Referer": "https://app.mihoyo.com",
+    "User-Agent": "okhttp/4.8.0",
+})
 
 
 def login():

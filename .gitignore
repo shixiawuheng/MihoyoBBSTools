@@ -146,3 +146,8 @@ yaml/
 
 # 日志文件
 *.log
+/geetest/
+/GeeTest_Click/
+/geetest_gct_click/
+/rush/
+/utils/

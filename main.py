@@ -27,6 +27,7 @@ def checkin_game(game_name, game_module, game_print_name=""):
         return return_data
     return ""
 
+
 def run_bbs():
     return_data = "米游社: "
     bbs = mihoyobbs.Mihoyobbs()

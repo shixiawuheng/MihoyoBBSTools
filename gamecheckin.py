@@ -16,7 +16,7 @@ class GameCheckin:
         self.headers = self._get_headers()
         self.game_id = game_id
         self.rewards_api = setting.cn_game_checkin_rewards
-        self.account_list = get_account_list(self.game_id, self.headers)
+        self.account_list = self._get_account_list()
         self.is_sign_api = setting.cn_game_is_signurl
         self.game_mid = ""
         self.game_name = ""
@@ -36,6 +36,17 @@ class GameCheckin:
         headers['x-rpc-device_id'] = tools.get_device_id()
         headers['User-Agent'] = tools.get_useragent()
         return headers
+
+    def _get_account_list(self, update: bool = False) -> list:
+        account_list = get_account_list(self.game_id, self.headers)
+        if account_list is None:
+            if not update and login.update_cookie_token():
+                self.headers = self._get_headers()
+                return self._get_account_list()
+            log.warning(f"获取{self.game_name}账号列表失败！")
+            config.clear_cookie_game(self.game_id)
+            raise CookieError("BBS Cookie Error")
+        return account_list
 
     # 获取签到信息
     def get_checkin_rewards(self) -> list:
@@ -59,7 +70,7 @@ class GameCheckin:
         data = req.json()
         if data["retcode"] != 0:
             if not update and login.update_cookie_token():
-                self._get_headers()
+                self.headers = self._get_headers()
                 return self.is_sign(region, uid, True)
             log.warning("获取账号签到信息失败！")
             print(req.text)
@@ -73,7 +84,7 @@ class GameCheckin:
         retries = 3
         for i in range(1, retries + 1):
             if i > 1:
-                log.info(f'触发验证码，即将进行第 {i} 次重试，最多 3 次')
+                log.info(f'触发验证码，即将进行第 {i} 次重试，最多 {retries} 次')
             req = http.post(url=self.sign_api, headers=header,
                             json={'act_id': self.act_id, 'region': account[2], 'uid': account[1]})
             if req.status_code == 429:

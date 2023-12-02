@@ -111,8 +111,10 @@ class Mihoyobbs:
         log.info("正在获取帖子列表......")
         req = http.get(url=setting.bbs_post_list_url,
                        params={"forum_id": setting.mihoyobbs_List_Use[0]["forumId"],
-                               "is_good": False, "is_hot": False, "page_size": 20, "sort_type": 1},
+                               "is_good": str(False).lower(), "is_hot": str(False).lower(),
+                               "page_size": 20, "sort_type": 1},
                        headers=self.headers)
+        log.debug(req.text)
         data = req.json()["data"]["list"]
         while len(temp_list) < 5:
             post = random.choice(data)

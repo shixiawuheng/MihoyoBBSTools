@@ -22,7 +22,8 @@ class TTOCR(object):
             'challenge': challenge
         }
         params.update(self.base_params)
-        res = requests.post("http://api.ttocr.com/api/recognize", params).json()
+        res = requests.post(
+            "http://api.ttocr.com/api/recognize", params).json()
         if res.get("status") == 1:
             return res.get("resultid")
         print(res.get("msg"))
@@ -33,30 +34,40 @@ class TTOCR(object):
             'resultid': id,
         }
         params.update(self.base_params)
-        res = requests.post("http://api.ttocr.com/api/results", params).json()
-        if res.get("status") == 1:
-            return res.get("data")
+        try:
+            res = requests.post(
+                "http://api.ttocr.com/api/results", params).json()
+            if res.get("status") == 1:
+                return res.get("data")
+        except:
+            pass
         print(res.get("msg"))
+        if res.get("msg") == "结果不存在":
+            return -1
         return None
 
     def run(self, gt: str, challenge: str):
-        res = self.post(gt, challenge)
-        if res != "":
-            val = None
-            count = 1
-            while val is None:
-                count = count + 1
-                if count > 30:
-                    break
-                val = self.results(res)
-                time.sleep(2)
-                if val is -1:
-                    return None
-            if val:
-                return val
-        return None
+        try:
+            res = self.post(gt, challenge)
+            if res != "":
+                val = None
+                count = 1
+                while val is None:
+                    count = count + 1
+                    if count > 30:
+                        break
+                    val = self.results(res)
+                    time.sleep(2)
+                    if val == -1:
+                        return None
+                if val:
+                    return val
+            return None
+        except:
+            pass
 
 
 if __name__ == '__main__':
     ocr = TTOCR("e52c9331b81f7d7ddca00afd2cbcaba1")
-    ocr.run("245273d7fa73f7b657098bf7441fe12f", "30f0f04fe984bce964de5749c9f17099")
+    ocr.run("245273d7fa73f7b657098bf7441fe12f",
+            "30f0f04fe984bce964de5749c9f17099")

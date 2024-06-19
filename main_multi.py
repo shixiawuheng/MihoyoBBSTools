@@ -15,6 +15,8 @@ from bark import bark
 def fund_config(ext: str) -> list:
     file_name = []
     for files in os.listdir(config.path):
+        if files == "config.yaml":
+            continue
         if os.path.splitext(files)[1] == ext:
             if config.config_prefix == "" or files.startswith(config.config_prefix):
                 file_name.append(files)
@@ -46,7 +48,7 @@ def main_multi(autorun: bool):
     else:
         log.info(f"已搜索到{len(config_list)}个配置文件，请确认是否无多余文件！\r\n{config_list}")
         try:
-            # input("请输入回车继续，需要重新搜索配置文件请Ctrl+C退出脚本")
+            input("请输入回车继续，需要重新搜索配置文件请Ctrl+C退出脚本")
             pass
         except KeyboardInterrupt:
             exit(0)
